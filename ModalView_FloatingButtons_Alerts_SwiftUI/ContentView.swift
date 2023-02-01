@@ -1,24 +1,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var showDetailView = false
     @State var SelectedArticle : Article?
     var body: some View {
         NavigationView {
             List(articles) { article in
                 ArticleRow(article: article)
                     .onTapGesture {
-                        self.showDetailView = true
                         self.SelectedArticle = article
                     }
             }
             .navigationTitle("Your Reading")
         }
         //Adding Sheet Modal.
-        .sheet(isPresented: self.$showDetailView){
-            if SelectedArticle != nil {
-                ArticleDetails(article: self.SelectedArticle!)
-            }
+        //The modifier lets you use an optional binding to achieve the same goal.
+        //This means Modal view will present only if the Selected Article has a value.
+        .sheet(item: self.$SelectedArticle){ article in
+            ArticleDetails(article: article)
         }
     }
 }
@@ -69,6 +67,7 @@ struct ArticleRow: View {
 
 struct ArticleDetails: View {
     var article: Article
+    @Environment(\.presentationMode) var presentaionMode
     var body: some View {
         ScrollView {
             VStack(alignment:.leading) {
@@ -92,8 +91,21 @@ struct ArticleDetails: View {
                     .lineLimit(.max)
                     .multilineTextAlignment(.leading)
             }
-            
-        }
+        }.overlay(
+            HStack {
+                Spacer()
+                VStack {
+                    Button(action: {
+                        self.presentaionMode.wrappedValue.dismiss()
+                    }, label: {
+                        Image(systemName: "chevron.down.circle.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                    })
+                    .padding(.trailing,20)
+                    .padding(.top,40)
+                    Spacer()
+                }
+            })
     }
 }
-
