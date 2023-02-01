@@ -1,13 +1,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    
+    @State var showDetailView = false
+    @State var SelectedArticle : Article?
     var body: some View {
         NavigationView {
             List(articles) { article in
                 ArticleRow(article: article)
+                    .onTapGesture {
+                        self.showDetailView = true
+                        self.SelectedArticle = article
+                    }
             }
             .navigationTitle("Your Reading")
+        }
+        //Adding Sheet Modal.
+        .sheet(isPresented: self.$showDetailView){
+            if SelectedArticle != nil {
+                ArticleDetails(article: self.SelectedArticle!)
+            }
         }
     }
 }
