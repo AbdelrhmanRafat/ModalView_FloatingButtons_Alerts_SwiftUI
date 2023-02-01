@@ -68,6 +68,7 @@ struct ArticleRow: View {
 struct ArticleDetails: View {
     var article: Article
     @Environment(\.presentationMode) var presentaionMode
+    @State var showAlert = false
     var body: some View {
         ScrollView {
             VStack(alignment:.leading) {
@@ -91,12 +92,18 @@ struct ArticleDetails: View {
                     .lineLimit(.max)
                     .multilineTextAlignment(.leading)
             }
-        }.overlay(
+        }
+        .alert(isPresented: $showAlert){
+            Alert(title: Text("Reminder"), message: Text("Are you sure you finish reading the article?"), primaryButton: .default(Text("Yes"), action: {
+                self.presentaionMode.wrappedValue.dismiss()
+            }), secondaryButton: .cancel(Text("No")))
+        }
+        .overlay(
             HStack {
                 Spacer()
                 VStack {
                     Button(action: {
-                        self.presentaionMode.wrappedValue.dismiss()
+                        self.showAlert = true // Show Alert.
                     }, label: {
                         Image(systemName: "chevron.down.circle.fill")
                             .font(.largeTitle)
